@@ -1,13 +1,13 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 
-// 👇 Import your route files
-import authRoutes from '../routes/authRoutes.js';
-import meetingRoutes from '../routes/meetingRoutes.js';
-import documentRoutes from '../routes/documentRoutes.js';
-import userRoutes from '../routes/userRoutes.js';
+// Route files (CommonJS)
+const authRoutes = require('../routes/authRoutes');
+const meetingRoutes = require('../routes/meetingRoutes');
+const documentRoutes = require('../routes/documentRoutes');
+const userRoutes = require('../routes/userRoutes');
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ const app = express();
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 
-// MongoDB Connection (with caching for serverless)
+// MongoDB Connection (with caching)
 let cached = global.mongoose;
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
@@ -46,10 +46,19 @@ app.get('/api/test', async (req, res) => {
   res.json({ message: 'Test route working!', db: 'connected' });
 });
 
-// 👇 Connect your actual API routes
+// Mount actual routes
 app.use('/api/auth', authRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/users', userRoutes);
 
-export default app;
+// For Vercel
+module.exports = app;
+
+// For local development (optional)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Local server running on port ${PORT}`);
+  });
+}
