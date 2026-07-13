@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "backend/api/index.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "backend/api/index.js"
+    }
+  ]
+}
